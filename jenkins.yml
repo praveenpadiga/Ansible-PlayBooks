@@ -1,0 +1,21 @@
+---
+- hosts: all #for Ubuntu & CentOS 
+  remote_user: root
+  tasks:
+  - name: update the repo
+    raw: sudo yum update -y
+  - name: download gpg-key
+    raw: sudo wget -O /etc/yum.repos.d/jenkins.repo \ https://pkg.jenkins.io/redhat-stable/jenkins.repo
+  - name: add gpg-key into repo for release jenkins package
+    raw: sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+  - name: update the repo
+    raw: sudo yum update -y
+  - name: install java-11
+    raw: amazon-linux-extras install java-openjdk11 -y
+  - name: install jenkins
+    package: name=jenkins state=present
+  - name: start jenkins
+    systemd: name=jenkins state=started
+  - name: reload
+    raw: sudo systemctl daemon-reload && sudo systemctl enable jenkins
+
